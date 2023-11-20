@@ -1,0 +1,221 @@
+@use "@/assets/scss/variables" as *;
+@use "@/assets/scss/reset";
+@use "@/assets/scss/mixins" as *;
+
+#app {
+  position: relative;
+  width: 30rem;
+  margin: 2rem 0;
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  background: $bg_color;
+}
+
+// Greeting Section
+.greeting {
+  margin-bottom: 1rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    column-gap: 0.8rem;
+    font-style: italic;
+    font-size: 23px;
+    font-weight: 600;
+
+    input {
+      max-width: 17rem;
+      text-transform: capitalize;
+      font-style: inherit;
+      font-size: inherit;
+      font-weight: 600;
+      color: $body_color;
+    }
+  }
+}
+// End Greeting Section //
+
+// Create New Todo Section
+.newtodo {
+  margin-bottom: 1rem;
+}
+
+.newtodo-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    flex-basis: 100%;
+    padding: 10px 50px 10px 16px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background: $bg_color2;
+    letter-spacing: 0.8px;
+    font-size: 15px;
+    color: $text_color;
+    transition: all 0.2s;
+
+    &:focus {
+      border-color: $body_color;
+      box-shadow: 0 0 5px $body_color;
+    }
+  }
+}
+
+.submit-newtodo {
+  position: absolute;
+  right: 5px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: $brand_color;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: $brand_color2;
+  }
+
+  i {
+    font-size: 23px;
+    color: $text_color;
+  }
+}
+// End Create New Todo Section //
+
+// List Todos Section
+.todos-list {
+  margin-bottom: 1.4rem;
+
+  h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .list-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 7px;
+    min-height: 5rem;
+    max-height: 28.5rem;
+    padding-right: 8px;
+    overflow-y: auto;
+  }
+}
+
+.todo-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  column-gap: 13px;
+  padding: 11px 7px;
+  border-radius: 7px;
+  background: $bg_color2;
+
+  .todo-checkbox {
+    display: none;
+  }
+
+  .todo-checkspan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid $brand_color;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 
+        0 0 2px $brand_color,
+        0 0 10px $brand_color,
+        0 0 15px $brand_color,
+      ;
+    }
+
+    &::after {
+      content: "";
+      display: block;
+      width: 0px;
+      height: 0px;
+      border-radius: 50%;
+      background-color: $brand_color;
+      opacity: 0;
+      box-shadow: 0 0 2px $brand_color;
+      transition: 0.2s;
+    }
+  }
+
+  .todo-text {
+    width: 15rem;
+    font-size: 15px;
+    color: $text_color;
+    cursor: default;
+
+    &.editable {
+      text-decoration: none !important;
+      border-bottom: 1px solid $text_color;
+      cursor: text;
+    }
+  }
+
+  &.done {
+    .todo-checkbox:checked ~ .todo-checkspan::after {
+      width: 8px;
+      height: 8px;
+      opacity: 1;
+    }
+  
+    .todo-text {
+      text-decoration: line-through;
+      color: $text_color2;
+    }
+  }
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 8px;
+  margin-left: auto;
+
+  i {
+    position: relative;
+    top: 3px;
+    font-size: 25px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .edit {
+    @include actionBtn(#a67106, #dd9607);
+  }
+  .save {
+    @include actionBtn(#0669a6, #0b89d7);
+  }
+  .delete {
+    @include actionBtn(#ac0000, #d70000);
+  }
+}
+// End List Todos Section //
+
+// Footer
+.footer {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 13px;
+  span {
+    font-family: $cursive_font, cursive;
+  }
+}
+// End Footer //

@@ -1,0 +1,42 @@
+@use "./variables" as *;
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Kalam:wght@300;400&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $main_font, sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background: $body_color;
+  color: $text_color;
+}
+
+input, button {
+	border: none;
+	outline: none;
+	background: none;
+}
+
+// Scroll Bar Override
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background: $text_color2;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: $brand_color;
+  &:hover {
+    background: $brand_color2;
+  }
+}

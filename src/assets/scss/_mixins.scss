@@ -1,0 +1,8 @@
+// Mixins
+
+@mixin actionBtn($normalColor, $hoverColor) {
+  color: $normalColor;
+  &:hover {
+    color: $hoverColor;
+  }
+}
