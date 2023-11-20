@@ -20,4 +20,4 @@ This App is developed using The Following :
     - Prettier
 
 ## Notes !!
-  - you can check the project online using below link :
+  - you can check the project online using below link : https://abdellatif-todo-app.netlify.app
