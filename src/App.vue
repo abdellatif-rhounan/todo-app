@@ -1,10 +1,11 @@
 <template>
   <section class="greeting">
-    <h2>
+    <h2 class="heading">
       What's up,
       <input
         type="text"
-        placeholder="Name here"
+        class="myname"
+        placeholder="My Name"
         v-model="myName"
         maxlength="20"
       />
@@ -12,57 +13,60 @@
   </section>
 
   <section class="newtodo">
-    <form class="newtodo-form" @submit.prevent="addTodo">
-      <input type="text" placeholder="Add Something" v-model="newTodoText" />
+    <form class="todo-form" @submit.prevent="addTodo">
+      <input type="text" class="todo-input" placeholder="Add Something" v-model="newTodo" />
 
-      <button type="submit" class="submit-newtodo">
+      <button type="submit" class="todo-submit">
         <i class="bx bx-plus"></i>
       </button>
     </form>
   </section>
 
-  <section class="todos-list">
-    <h2>Todos List</h2>
+  <section class="todo-list">
+    <h2 class="heading">Todo List</h2>
 
-    <div class="list-content">
+    <div class="content">
       <div
-        v-for="(todo, i) in todos_asc"
-        :key="i"
-        :class="{
-          'todo-item': true,
-          done: todo.done,
-        }"
+        class="todo-item"
+        v-for="todo in todos_asc"
+        :key="todo.createdAt"
+        :class="{completed: todo.completed}"
       >
-        <label>
-          <input type="checkbox" class="todo-checkbox" v-model="todo.done" />
-          <span class="todo-checkspan"></span>
-        </label>
+        <div class="todo-check">
+          <input
+            type="checkbox"
+            class="checkbox"
+            :id="`checkbox-${todo.createdAt}`"
+            v-model="todo.completed"
+          />
+          <label class="checkspan" :for="`checkbox-${todo.createdAt}`"></label>
+        </div>
 
         <input
           type="text"
-          :class="{
-            'todo-text': true,
-            editable: todo.editable,
-          }"
-          :readonly="!todo.editable"
+          class="todo-text"
+          :class="{editing: todo.editing}"
+          :readonly="!todo.editing"
           v-model="todo.text"
-          @blur="blur(todo)"
-          @keyup.enter="finishChange"
+          @blur="doneEdit(todo)"
+          @keyup.enter="doneEdit(todo)"
+          @keyup.esc="cancelEdit(todo)"
         />
 
         <div class="actions">
           <i
-            class="bx bxs-edit-alt edit"
+            class="bx bxs-edit-alt edit-item"
+            v-show="!todo.editing"
             @click.left="editTodo($event, todo)"
-            v-show="!todo.editable"
-          >
+            >
           </i>
 
-          <i class="bx bxs-save save" v-show="todo.editable"> </i>
+          <i class="bx bxs-save save-item" v-show="todo.editing"></i>
 
-          <i class="bx bxs-trash-alt delete" @click.left="removeTodo(todo)">
+          <i class="bx bxs-trash-alt remove-item" @click.left="removeTodo(todo)">
           </i>
         </div>
+
       </div>
     </div>
   </section>
@@ -79,42 +83,56 @@ export default {
   data() {
     return {
       myName: "",
-      newTodoText: "",
+      newTodo: "",
       todos: [],
+      beforeEdit: "",
     };
   },
+
   computed: {
     todos_asc() {
-      let x = this.todos;
-      return x.sort((a, b) => a.createdAt - b.createdAt);
+      return [...this.todos].sort((a, b) => a.createdAt - b.createdAt);
     },
   },
+
   methods: {
     addTodo() {
-      if (this.newTodoText.trim() !== "") {
-        this.todos.push({
-          text: this.newTodoText.trim(),
-          done: false,
-          editable: false,
-          createdAt: new Date().getTime(),
-        });
-        this.newTodoText = "";
+      if (this.newTodo.trim().length == 0) {
+        return;
       }
+
+      this.todos.push({
+        text: this.newTodo.trim(),
+        completed: false,
+        editing: false,
+        createdAt: new Date().getTime(),
+      });
+      this.newTodo = "";
     },
+
     removeTodo(todo) {
       this.todos = this.todos.filter((e) => e !== todo);
     },
+
     editTodo(event, todo) {
-      todo.editable = true;
+      this.beforeEdit = todo.text;
+      todo.editing = true;
       event.srcElement.parentElement.previousSibling.focus();
     },
-    blur(todo) {
-      todo.editable = false;
+
+    doneEdit(todo) {
+      if (todo.text.trim().length == 0) {
+        todo.text = this.beforeEdit;
+      }
+      todo.editing = false;
     },
-    finishChange(event) {
-      event.srcElement.blur();
+
+    cancelEdit(todo) {
+      todo.text = this.beforeEdit;
+      todo.editing = false;
     },
   },
+
   watch: {
     myName(newVal) {
       localStorage.setItem("myName", newVal);
@@ -126,6 +144,7 @@ export default {
       deep: true,
     },
   },
+
   mounted() {
     this.myName = localStorage.getItem("myName") || "";
     this.todos = JSON.parse(localStorage.getItem("todos")) || [];
