@@ -69,6 +69,34 @@
 
       </div>
     </div>
+
+    <div class="stats">
+      <label class="checkall" for="checkAll">
+        <input
+          type="checkbox"
+          class="checkbox"
+          id="checkAll"
+          :checked="noRemaining"
+          @change="checkAll"
+        />
+        <span class="checkspan"></span>
+        <span>Check All</span>
+      </label>
+
+      <div class="remaining">{{ remaining }} items left</div>
+    </div>
+
+    <div class="stats">
+      <div class="filters">
+        <button :class="{active: filter == 'all'}" @click="filter = 'all'">All</button>
+        <button :class="{active: filter == 'active'}" @click="filter = 'active'">Active</button>
+        <button :class="{active: filter == 'completed'}" @click="filter = 'completed'">Completed</button>
+      </div>
+
+      <div class="clear-completed">
+        <button v-show="showClearCompleted" @click="clearCompleted">Clear Completed</button>
+      </div>
+    </div>
   </section>
 
   <footer class="footer">
@@ -86,12 +114,37 @@ export default {
       newTodo: "",
       todos: [],
       beforeEdit: "",
+      filter: "all",
     };
   },
 
   computed: {
     todos_asc() {
-      return [...this.todos].sort((a, b) => a.createdAt - b.createdAt);
+      return [...this.todos_filterd].sort((a, b) => a.createdAt - b.createdAt);
+    },
+
+    todos_filterd() {
+      if (this.filter == 'all') {
+        return this.todos;
+      }
+      else if (this.filter == 'active') {
+        return this.todos.filter(e => !e.completed);
+      }
+      else if (this.filter == 'completed') {
+        return this.todos.filter(e => e.completed);
+      }
+    },
+
+    remaining() {
+      return this.todos.filter(e => !e.completed).length;
+    },
+
+    noRemaining() {
+      return (this.remaining == 0);
+    },
+
+    showClearCompleted() {
+      return (this.todos.filter(e => e.completed).length > 0);
     },
   },
 
@@ -130,6 +183,16 @@ export default {
     cancelEdit(todo) {
       todo.text = this.beforeEdit;
       todo.editing = false;
+    },
+
+    checkAll(event) {
+      this.todos.forEach((e) => {
+        e.completed = event.target.checked;
+      });
+    },
+
+    clearCompleted() {
+      this.todos = this.todos.filter(e => !e.completed);
     },
   },
 

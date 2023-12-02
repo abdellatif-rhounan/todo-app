@@ -206,6 +206,78 @@
     @include actionBtn(#ac0000, #d70000);
   }
 }
+
+.stats {
+  margin-top: 12px;
+  padding: 10px 6px;
+  background: $bg_color2;
+  font-size: 14px;
+
+  .checkall {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 10px;
+    cursor: pointer;
+
+    .checkbox {
+      display: none;
+
+      &:checked ~ .checkspan::after {
+        width: 8px;
+        height: 8px;
+        opacity: 1;
+      }
+    }
+
+    .checkspan {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid $brand_color;
+      cursor: pointer;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+  
+      &::after {
+        content: "";
+        position: absolute;
+        display: block;
+        width: 0px;
+        height: 0px;
+        border-radius: 50%;
+        background-color: $brand_color;
+        opacity: 0;
+        box-shadow: 0 0 2px $brand_color;
+        transition: 0.2s;
+      }
+  
+      &:hover {
+        box-shadow: 
+          0 0 2px $brand_color,
+          0 0 10px $brand_color,
+          0 0 15px $brand_color,
+        ;
+      }
+    }
+  }
+}
+
+.filters button {
+  color: #ededed;
+  margin-right: 10px;
+  cursor: pointer;
+  border: 1px solid #333;
+  &.active {
+    background-color: $brand_color;
+  }
+}
+
+.clear-completed button {
+  color: #ededed;
+}
 // End
 
 // ***** Footer *****
