@@ -5,7 +5,7 @@
 #app {
   position: relative;
   width: 30rem;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   padding: 1rem 1.5rem;
   border-radius: 15px;
   background: $bg_color;
@@ -55,7 +55,7 @@
     font-size: 15px;
     color: $text_color;
     transition: all 0.2s;
-  
+
     &:focus {
       border-color: $body_color;
       box-shadow: 0 0 5px $body_color;
@@ -74,11 +74,11 @@
     background-color: $brand_color;
     cursor: pointer;
     transition: background-color 0.3s;
-  
+
     &:hover {
       background-color: $brand_color2;
     }
-  
+
     i {
       font-size: 23px;
       color: $text_color;
@@ -89,22 +89,91 @@
 
 // ***** Todo List Section *****
 .todo-list {
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.3rem;
 
   .heading {
     font-size: 20px;
     margin-bottom: 12px;
   }
+}
 
-  .content {
+.todos-footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 7px;
+  padding-right: 8px;
+  margin-bottom: 12px;
+
+  .footer-item {
     display: flex;
-    flex-direction: column;
-    row-gap: 7px;
-    min-height: 5rem;
-    max-height: 28.5rem;
-    padding-right: 8px;
-    overflow-y: auto;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 6px;
   }
+
+  .checkall {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 7px;
+    font-size: 14px;
+    .checkbox,
+    .label {
+      cursor: pointer;
+    }
+    .label {
+      color: $text_color2;
+    }
+  }
+
+  .remaining {
+    font-size: 14px;
+    color: $text_color2;
+  }
+
+  .clear-completed {
+    padding: 2px 5px;
+    border-radius: 5px;
+    background-color: $delete_color;
+    font-size: 12px;
+    font-weight: 500;
+    color: $text_color;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+    &:hover {
+      background-color: $delete_color_hover;
+    }
+  }
+
+  .filters {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 5px;
+
+    button {
+      padding: 2px 4px;
+      border-radius: 3px;
+      border: 2px solid $brand_color;
+      font-size: 12px;
+      color: $text_color;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &.active {
+        background-color: $brand_color;
+      }
+    }
+  }
+}
+
+.todo-list .content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 7px;
+  min-height: 5rem;
+  max-height: 27.4rem;
+  padding-right: 8px;
+  overflow-y: auto;
 }
 
 .todo-item {
@@ -120,7 +189,7 @@
     .checkbox {
       display: none;
     }
-  
+
     .checkspan {
       display: flex;
       justify-content: center;
@@ -131,7 +200,7 @@
       border: 2px solid $brand_color;
       cursor: pointer;
       transition: box-shadow 0.2s;
-  
+
       &::after {
         content: "";
         display: block;
@@ -143,13 +212,10 @@
         box-shadow: 0 0 2px $brand_color;
         transition: 0.2s;
       }
-  
+
       &:hover {
-        box-shadow: 
-          0 0 2px $brand_color,
-          0 0 10px $brand_color,
-          0 0 15px $brand_color,
-        ;
+        box-shadow: 0 0 2px $brand_color, 0 0 10px $brand_color,
+          0 0 15px $brand_color;
       }
     }
   }
@@ -166,7 +232,6 @@
       cursor: text;
     }
   }
-
 
   &.completed {
     .todo-check .checkbox:checked ~ .checkspan::after {
@@ -197,86 +262,26 @@
   }
 
   .edit-item {
-    @include actionBtn(#a67106, #dd9607);
+    @include actionBtn(#dd9607, #a67106);
   }
   .save-item {
-    @include actionBtn(#0669a6, #0b89d7);
+    @include actionBtn($brand_color, $brand_color2);
   }
   .remove-item {
-    @include actionBtn(#ac0000, #d70000);
+    @include actionBtn($delete_color, $delete_color_hover);
   }
 }
 
-.stats {
-  margin-top: 12px;
-  padding: 10px 6px;
-  background: $bg_color2;
-  font-size: 14px;
-
-  .checkall {
-    display: inline-flex;
-    align-items: center;
-    column-gap: 10px;
-    cursor: pointer;
-
-    .checkbox {
-      display: none;
-
-      &:checked ~ .checkspan::after {
-        width: 8px;
-        height: 8px;
-        opacity: 1;
-      }
-    }
-
-    .checkspan {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid $brand_color;
-      cursor: pointer;
-      overflow: hidden;
-      transition: box-shadow 0.2s;
-  
-      &::after {
-        content: "";
-        position: absolute;
-        display: block;
-        width: 0px;
-        height: 0px;
-        border-radius: 50%;
-        background-color: $brand_color;
-        opacity: 0;
-        box-shadow: 0 0 2px $brand_color;
-        transition: 0.2s;
-      }
-  
-      &:hover {
-        box-shadow: 
-          0 0 2px $brand_color,
-          0 0 10px $brand_color,
-          0 0 15px $brand_color,
-        ;
-      }
-    }
-  }
-}
-
-.filters button {
-  color: #ededed;
-  margin-right: 10px;
-  cursor: pointer;
-  border: 1px solid #333;
-  &.active {
-    background-color: $brand_color;
-  }
-}
-
-.clear-completed button {
-  color: #ededed;
+.no-task {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  border-radius: 7px;
+  background-color: $bg_color2;
+  font-family: 'Kalam';
+  font-size: 32px;
+  color: $text_color2;
 }
 // End
 
@@ -293,4 +298,4 @@
     font-family: $cursive_font, cursive;
   }
 }
-// End 
+// End

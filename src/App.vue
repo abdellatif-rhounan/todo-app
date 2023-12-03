@@ -2,13 +2,7 @@
   <section class="greeting">
     <h2 class="heading">
       What's up,
-      <input
-        type="text"
-        class="myname"
-        placeholder="My Name"
-        v-model="myName"
-        maxlength="20"
-      />
+      <input type="text" class="myname" placeholder="My Name" v-model="myName" maxlength="20" />
     </h2>
   </section>
 
@@ -25,78 +19,52 @@
   <section class="todo-list">
     <h2 class="heading">Todo List</h2>
 
-    <div class="content">
-      <div
-        class="todo-item"
-        v-for="todo in todos_asc"
-        :key="todo.createdAt"
-        :class="{completed: todo.completed}"
-      >
+    <div class="todos-footer">
+      <div class="footer-item">
+        <div class="checkall">
+          <input type="checkbox" class="checkbox" id="checkAll" :checked="noRemaining" @change="checkAll" />
+          <label class="label" for="checkAll">Check All</label>
+        </div>
+
+        <div class="remaining">{{ remaining }} items left</div>
+      </div>
+
+      <div class="footer-item">
+        <div class="filters">
+          <button :class="{ active: filter == 'all' }" @click="filter = 'all'">All</button>
+          <button :class="{ active: filter == 'active' }" @click="filter = 'active'">Active</button>
+          <button :class="{ active: filter == 'completed' }" @click="filter = 'completed'">Completed</button>
+        </div>
+
+        <button class="clear-completed" v-show="showClearCompleted" @click="clearCompleted">
+          Clear Completed
+        </button>
+      </div>
+    </div>
+
+    <div v-if="anyTodos" class="content">
+      <div class="todo-item" v-for="todo in todos_asc" :key="todo.createdAt" :class="{ completed: todo.completed }">
+
         <div class="todo-check">
-          <input
-            type="checkbox"
-            class="checkbox"
-            :id="`checkbox-${todo.createdAt}`"
-            v-model="todo.completed"
-          />
+          <input type="checkbox" class="checkbox" :id="`checkbox-${todo.createdAt}`" v-model="todo.completed" />
           <label class="checkspan" :for="`checkbox-${todo.createdAt}`"></label>
         </div>
 
-        <input
-          type="text"
-          class="todo-text"
-          :class="{editing: todo.editing}"
-          :readonly="!todo.editing"
-          v-model="todo.text"
-          @blur="doneEdit(todo)"
-          @keyup.enter="doneEdit(todo)"
-          @keyup.esc="cancelEdit(todo)"
-        />
+        <input type="text" class="todo-text" :class="{ editing: todo.editing }" :readonly="!todo.editing"
+          v-model="todo.text" @blur="doneEdit(todo)" @keyup.enter="doneEdit(todo)" @keyup.esc="cancelEdit(todo)" />
 
         <div class="actions">
-          <i
-            class="bx bxs-edit-alt edit-item"
-            v-show="!todo.editing"
-            @click.left="editTodo($event, todo)"
-            >
+          <i class="bx bxs-edit-alt edit-item" v-show="!todo.editing" @click.left="editTodo($event, todo)">
           </i>
 
           <i class="bx bxs-save save-item" v-show="todo.editing"></i>
 
-          <i class="bx bxs-trash-alt remove-item" @click.left="removeTodo(todo)">
-          </i>
+          <i class="bx bxs-trash-alt remove-item" @click.left="removeTodo(todo)"></i>
         </div>
 
       </div>
     </div>
-
-    <div class="stats">
-      <label class="checkall" for="checkAll">
-        <input
-          type="checkbox"
-          class="checkbox"
-          id="checkAll"
-          :checked="noRemaining"
-          @change="checkAll"
-        />
-        <span class="checkspan"></span>
-        <span>Check All</span>
-      </label>
-
-      <div class="remaining">{{ remaining }} items left</div>
-    </div>
-
-    <div class="stats">
-      <div class="filters">
-        <button :class="{active: filter == 'all'}" @click="filter = 'all'">All</button>
-        <button :class="{active: filter == 'active'}" @click="filter = 'active'">Active</button>
-        <button :class="{active: filter == 'completed'}" @click="filter = 'completed'">Completed</button>
-      </div>
-
-      <div class="clear-completed">
-        <button v-show="showClearCompleted" @click="clearCompleted">Clear Completed</button>
-      </div>
-    </div>
+    <div v-else class="no-task">No Task!</div>
   </section>
 
   <footer class="footer">
@@ -145,6 +113,10 @@ export default {
 
     showClearCompleted() {
       return (this.todos.filter(e => e.completed).length > 0);
+    },
+
+    anyTodos() {
+      return (this.todos_asc.length > 0);
     },
   },
 
