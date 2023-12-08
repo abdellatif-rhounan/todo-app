@@ -97,14 +97,14 @@
   }
 }
 
-.todos-footer {
+.todos-control {
   display: flex;
   flex-direction: column;
   row-gap: 7px;
   padding-right: 8px;
   margin-bottom: 12px;
 
-  .footer-item {
+  .c-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
