@@ -139,10 +139,22 @@
     color: $text_color;
     cursor: pointer;
     transition: background-color 0.3s;
-    
+
     &:hover {
       background-color: $delete_color_hover;
     }
+
+    // ***** Vue Classes *****
+    &.fade-enter-active,
+    &.fade-leave-active {
+      transition: opacity 0.3s;
+    }
+
+    &.fade-enter-from,
+    &.fade-leave-to {
+      opacity: 0;
+    }
+    // End
   }
 
   .filters {
@@ -184,6 +196,7 @@
   padding: 11px 7px;
   border-radius: 7px;
   background: $bg_color2;
+  animation-duration: 0.4s;
 
   .todo-check {
     .checkbox {
@@ -279,7 +292,7 @@
   height: 100px;
   border-radius: 7px;
   background-color: $bg_color2;
-  font-family: 'Kalam';
+  font-family: "Kalam";
   font-size: 32px;
   color: $text_color2;
 }
@@ -299,3 +312,7 @@
   }
 }
 // End
+
+.fadeInUp {
+  background-color: red !important;
+}

@@ -70,56 +70,67 @@
           </button>
         </div>
 
-        <button
-          class="clear-completed"
-          v-show="showClearCompleted"
-          @click="clearCompleted"
-        >
-          Clear Completed
-        </button>
+        <transition name="fade">
+          <button
+            class="clear-completed"
+            v-if="showClearCompleted"
+            @click="clearCompleted"
+          >
+            Clear Completed
+          </button>
+        </transition>
       </div>
     </div>
 
     <div v-if="anyTodos" class="content">
-      <div
-        class="todo-item"
-        v-for="todo in filterdTodos"
-        :key="todo.id"
-        :class="{ completed: todo.completed }"
+      <TransitionGroup
+        name="list"
+        enter-active-class="animate__animated animate__fadeInLeft"
+        leave-active-class="animate__animated animate__fadeOutLeft"
       >
-        <div class="todo-check">
+        <div
+          class="todo-item"
+          v-for="todo in filterdTodos"
+          :key="todo.id"
+          :class="{ completed: todo.completed }"
+        >
+          <div class="todo-check">
+            <input
+              type="checkbox"
+              class="checkbox"
+              :id="`checkbox-${todo.id}`"
+              v-model="todo.completed"
+            />
+            <label class="checkspan" :for="`checkbox-${todo.id}`"></label>
+          </div>
+
           <input
-            type="checkbox"
-            class="checkbox"
-            :id="`checkbox-${todo.id}`"
-            v-model="todo.completed"
+            type="text"
+            class="todo-text"
+            :class="{ editing: todo.editing }"
+            :readonly="!todo.editing"
+            v-model="todo.text"
+            @blur="doneEdit(todo)"
+            @keyup.enter="doneEdit(todo)"
+            @keyup.esc="cancelEdit(todo)"
           />
-          <label class="checkspan" :for="`checkbox-${todo.id}`"></label>
+
+          <div class="actions">
+            <i
+              v-if="!todo.editing"
+              class="bx bxs-edit-alt edit-item"
+              @click="editTodo($event, todo)"
+            >
+            </i>
+            <i v-else class="bx bxs-save save-item"></i>
+
+            <i
+              class="bx bxs-trash-alt remove-item"
+              @click="removeTodo(todo)"
+            ></i>
+          </div>
         </div>
-
-        <input
-          type="text"
-          class="todo-text"
-          :class="{ editing: todo.editing }"
-          :readonly="!todo.editing"
-          v-model="todo.text"
-          @blur="doneEdit(todo)"
-          @keyup.enter="doneEdit(todo)"
-          @keyup.esc="cancelEdit(todo)"
-        />
-
-        <div class="actions">
-          <i
-            v-if="!todo.editing"
-            class="bx bxs-edit-alt edit-item"
-            @click="editTodo($event, todo)"
-          >
-          </i>
-          <i v-else class="bx bxs-save save-item"></i>
-
-          <i class="bx bxs-trash-alt remove-item" @click="removeTodo(todo)"></i>
-        </div>
-      </div>
+      </TransitionGroup>
     </div>
     <div v-else class="no-task">No Task!</div>
   </section>
