@@ -88,48 +88,15 @@
         enter-active-class="animate__animated animate__fadeInLeft"
         leave-active-class="animate__animated animate__fadeOutLeft"
       >
-        <div
-          class="todo-item"
+        <TodoItem
           v-for="todo in filterdTodos"
           :key="todo.id"
-          :class="{ completed: todo.completed }"
-        >
-          <div class="todo-check">
-            <input
-              type="checkbox"
-              class="checkbox"
-              :id="`checkbox-${todo.id}`"
-              v-model="todo.completed"
-            />
-            <label class="checkspan" :for="`checkbox-${todo.id}`"></label>
-          </div>
-
-          <input
-            type="text"
-            class="todo-text"
-            :class="{ editing: todo.editing }"
-            :readonly="!todo.editing"
-            v-model="todo.text"
-            @blur="doneEdit(todo)"
-            @keyup.enter="doneEdit(todo)"
-            @keyup.esc="cancelEdit(todo)"
-          />
-
-          <div class="actions">
-            <i
-              v-if="!todo.editing"
-              class="bx bxs-edit-alt edit-item"
-              @click="editTodo($event, todo)"
-            >
-            </i>
-            <i v-else class="bx bxs-save save-item"></i>
-
-            <i
-              class="bx bxs-trash-alt remove-item"
-              @click="removeTodo(todo)"
-            ></i>
-          </div>
-        </div>
+          :todo="todo"
+          :checkedAll="allDone"
+          @removed-todo="removeTodo"
+          @text-edited="editText"
+          @check-edited="editCheck"
+        />
       </TransitionGroup>
     </div>
     <div v-else class="no-task">No Task!</div>
@@ -142,18 +109,23 @@
 </template>
 
 <script>
+import TodoItem from "@/components/TodoItem.vue";
+
 export default {
   name: "App",
 
   data() {
     return {
-      myName: null,
+      myName: "",
       newTodo: "",
       todos: [],
-      idForTodo: null,
-      preEdit: "",
+      idForTodo: 0,
       myfilter: "all",
     };
+  },
+
+  components: {
+    TodoItem,
   },
 
   computed: {
@@ -164,8 +136,9 @@ export default {
         return this.todos.filter((e) => !e.completed);
       } else if (this.myfilter == "completed") {
         return this.todos.filter((e) => e.completed);
+      } else {
+        return this.todos;
       }
-      return this.todos;
     },
 
     remaining() {
@@ -199,39 +172,43 @@ export default {
         id: this.idForTodo,
         text: this.newTodo.trim(),
         completed: false,
-        editing: false,
       });
 
       this.newTodo = "";
       this.idForTodo++;
     },
 
-    removeTodo(todo) {
-      this.todos = this.todos.filter((e) => e !== todo);
-    },
-
-    editTodo(event, todo) {
-      this.preEdit = todo.text;
-      todo.editing = true;
-      event.srcElement.parentElement.previousSibling.focus();
-    },
-
-    doneEdit(todo) {
-      if (todo.text.trim().length == 0) {
-        todo.text = this.preEdit;
+    removeTodo(id) {
+      for (const [index, todo] of this.todos.entries()) {
+        if (todo.id === id) {
+          this.todos.splice(index, 1);
+          break;
+        }
       }
-      todo.editing = false;
     },
 
-    cancelEdit(todo) {
-      todo.text = this.preEdit;
-      todo.editing = false;
+    editText(data) {
+      for (const [i, el] of this.todos.entries()) {
+        if (el.id == data.id) {
+          this.todos[i].text = data.text;
+          break;
+        }
+      }
     },
 
     checkAll(event) {
       this.todos.forEach((e) => {
         e.completed = event.target.checked;
       });
+    },
+
+    editCheck(data) {
+      for (const [i, el] of this.todos.entries()) {
+        if (el.id === data.id) {
+          this.todos[i].completed = data.completed;
+          break;
+        }
+      }
     },
 
     clearCompleted() {
