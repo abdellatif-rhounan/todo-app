@@ -45,27 +45,31 @@ export default {
       type: Object,
       required: true,
     },
-    checkedAll: {
-      type: Boolean,
-      required: true,
-    },
   },
-
-  emits: ["removed-todo", "text-edited", "check-edited"],
 
   data() {
     return {
       editing: false,
       preEdit: "",
-      // For Mutating Props
       text: this.todo.text,
       completed: this.todo.completed,
     };
   },
 
+  computed: {
+    allDone() {
+      return this.$store.getters.allDone;
+    },
+  },
+
   methods: {
     removeTodo() {
-      this.$emit("removed-todo", this.todo.id);
+      for (const [index, el] of this.$store.state.todos.entries()) {
+        if (el.id === this.todo.id) {
+          this.$store.commit("removeTodo", index);
+          break;
+        }
+      }
     },
 
     editTodo(event) {
@@ -77,23 +81,31 @@ export default {
     editText() {
       this.editing = false;
 
-      if (this.text.trim() == this.preEdit) {
-        this.text = this.preEdit;
-      } else if (this.text.trim().length == 0) {
+      if (this.text.trim() == this.preEdit || this.text.trim().length == 0) {
         this.text = this.preEdit;
       } else {
-        this.$emit("text-edited", {
-          id: this.todo.id,
-          text: this.text,
-        });
+        for (const [index, el] of this.$store.state.todos.entries()) {
+          if (el.id == this.todo.id) {
+            this.$store.commit('editText', {
+              index,
+              text: this.text,
+            });
+            break;
+          }
+        }
       }
     },
 
     editCheck() {
-      this.$emit("check-edited", {
-        id: this.todo.id,
-        completed: this.completed,
-      });
+      for (const [index, el] of this.$store.state.todos.entries()) {
+        if (el.id == this.todo.id) {
+          this.$store.commit('editCheck', {
+            index,
+            completed: this.completed,
+          });
+          break;
+        }
+      }
     },
 
     cancelEdit() {
@@ -103,7 +115,7 @@ export default {
   },
 
   watch: {
-    checkedAll(v) {
+    allDone(v) {
       this.completed = v ? true : this.todo.completed;
     },
   },

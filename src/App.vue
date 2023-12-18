@@ -32,52 +32,16 @@
 
     <div class="todos-control">
       <div class="c-row">
-        <div class="checkall">
-          <input
-            type="checkbox"
-            class="checkbox"
-            id="checkAll"
-            :checked="allDone"
-            @change="checkAll"
-          />
-          <label class="label" for="checkAll">Check All</label>
-        </div>
+        <CheckAll />
 
-        <div class="remaining">
-          {{ remaining }} item{{ remaining > 1 ? "s" : "" }} left
-        </div>
+        <ItemRemaining />
       </div>
 
       <div class="c-row">
-        <div class="filters">
-          <button
-            :class="{ active: myfilter == 'all' }"
-            @click="myfilter = 'all'"
-          >
-            All
-          </button>
-          <button
-            :class="{ active: myfilter == 'active' }"
-            @click="myfilter = 'active'"
-          >
-            Active
-          </button>
-          <button
-            :class="{ active: myfilter == 'completed' }"
-            @click="myfilter = 'completed'"
-          >
-            Completed
-          </button>
-        </div>
+        <FilterTodos />
 
         <transition name="fade">
-          <button
-            class="clear-completed"
-            v-if="showClearCompleted"
-            @click="clearCompleted"
-          >
-            Clear Completed
-          </button>
+          <ClearCompleted />
         </transition>
       </div>
     </div>
@@ -88,15 +52,7 @@
         enter-active-class="animate__animated animate__fadeInLeft"
         leave-active-class="animate__animated animate__fadeOutLeft"
       >
-        <TodoItem
-          v-for="todo in filterdTodos"
-          :key="todo.id"
-          :todo="todo"
-          :checkedAll="allDone"
-          @removed-todo="removeTodo"
-          @text-edited="editText"
-          @check-edited="editCheck"
-        />
+        <TodoItem v-for="todo in filterdTodos" :key="todo.id" :todo="todo" />
       </TransitionGroup>
     </div>
     <div v-else class="no-task">No Task!</div>
@@ -109,6 +65,10 @@
 </template>
 
 <script>
+import CheckAll from "@/components/CheckAll.vue";
+import ItemRemaining from "@/components/ItemRemaining.vue";
+import FilterTodos from "@/components/FilterTodos.vue";
+import ClearCompleted from "@/components/ClearCompleted.vue";
 import TodoItem from "@/components/TodoItem.vue";
 
 export default {
@@ -118,43 +78,29 @@ export default {
     return {
       myName: "",
       newTodo: "",
-      todos: [],
       idForTodo: 0,
-      myfilter: "all",
     };
   },
 
   components: {
+    CheckAll,
+    ItemRemaining,
+    FilterTodos,
+    ClearCompleted,
     TodoItem,
   },
 
   computed: {
+    todos() {
+      return this.$store.state.todos;
+    },
+
     filterdTodos() {
-      if (this.myfilter == "all") {
-        return this.todos;
-      } else if (this.myfilter == "active") {
-        return this.todos.filter((e) => !e.completed);
-      } else if (this.myfilter == "completed") {
-        return this.todos.filter((e) => e.completed);
-      } else {
-        return this.todos;
-      }
-    },
-
-    remaining() {
-      return this.todos.filter((e) => !e.completed).length;
-    },
-
-    allDone() {
-      return this.remaining == 0;
-    },
-
-    showClearCompleted() {
-      return this.todos.filter((e) => e.completed).length > 0;
+      return this.$store.getters.filterdTodos;
     },
 
     anyTodos() {
-      return this.filterdTodos.length > 0;
+      return this.$store.getters.anyTodos;
     },
 
     yearNow() {
@@ -168,7 +114,7 @@ export default {
         return;
       }
 
-      this.todos.push({
+      this.$store.commit("addTodo", {
         id: this.idForTodo,
         text: this.newTodo.trim(),
         completed: false,
@@ -177,48 +123,15 @@ export default {
       this.newTodo = "";
       this.idForTodo++;
     },
-
-    removeTodo(id) {
-      for (const [index, todo] of this.todos.entries()) {
-        if (todo.id === id) {
-          this.todos.splice(index, 1);
-          break;
-        }
-      }
-    },
-
-    editText(data) {
-      for (const [i, el] of this.todos.entries()) {
-        if (el.id == data.id) {
-          this.todos[i].text = data.text;
-          break;
-        }
-      }
-    },
-
-    checkAll(event) {
-      this.todos.forEach((e) => {
-        e.completed = event.target.checked;
-      });
-    },
-
-    editCheck(data) {
-      for (const [i, el] of this.todos.entries()) {
-        if (el.id === data.id) {
-          this.todos[i].completed = data.completed;
-          break;
-        }
-      }
-    },
-
-    clearCompleted() {
-      this.todos = this.todos.filter((e) => !e.completed);
-    },
   },
 
   watch: {
     myName(newVal) {
       localStorage.setItem("myName", newVal);
+    },
+
+    idForTodo(newVal) {
+      localStorage.setItem("idForTodo", newVal);
     },
 
     todos: {
@@ -227,16 +140,17 @@ export default {
       },
       deep: true,
     },
-
-    idForTodo(newVal) {
-      localStorage.setItem("idForTodo", newVal);
-    },
   },
 
   mounted() {
     this.myName = localStorage.getItem("myName") || "";
-    this.todos = JSON.parse(localStorage.getItem("todos")) || [];
+
     this.idForTodo = +localStorage.getItem("idForTodo") || 0;
+
+    this.$store.commit(
+      "mountTodos",
+      JSON.parse(localStorage.getItem("todos")) || []
+    );
   },
 };
 </script>
