@@ -2,7 +2,7 @@
   <button
     class="clear-completed"
     v-if="showClearCompleted"
-    @click="clearCompleted"
+    @click="clearCompletedTodos"
   >
     Clear Completed
   </button>
@@ -19,9 +19,9 @@ export default {
   },
 
   methods: {
-    clearCompleted() {
-      const result = this.$store.state.todos.filter((e) => !e.completed);
-      this.$store.commit("clearCompleted", result);
+    clearCompletedTodos() {
+      const result = this.$store.state.todos.filter((el) => !el.completed);
+      this.$store.commit("clearCompletedTodos", result);
     },
   },
 };

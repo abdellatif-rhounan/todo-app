@@ -2,24 +2,13 @@
   <section class="greeting">
     <h2 class="heading">
       What's up,
-      <input
-        type="text"
-        class="myname"
-        placeholder="Your Name"
-        maxlength="20"
-        v-model="myName"
-      />
+      <input type="text" class="myname" placeholder="Your Name" maxlength="20" v-model="myName" />
     </h2>
   </section>
 
   <section class="newtodo">
     <form class="todo-form" @submit.prevent="addTodo">
-      <input
-        type="text"
-        class="todo-input"
-        placeholder="Add Something"
-        v-model="newTodo"
-      />
+      <input type="text" class="todo-input" placeholder="Add Something" v-model="newTodo" />
 
       <button type="submit" class="todo-submit">
         <i class="bx bx-plus"></i>
@@ -47,12 +36,9 @@
     </div>
 
     <div v-if="anyTodos" class="content">
-      <TransitionGroup
-        name="list"
-        enter-active-class="animate__animated animate__fadeInLeft"
-        leave-active-class="animate__animated animate__fadeOutLeft"
-      >
-        <TodoItem v-for="todo in filterdTodos" :key="todo.id" :todo="todo" />
+      <TransitionGroup name="list" enter-active-class="animate__animated animate__fadeInLeft"
+        leave-active-class="animate__animated animate__fadeOutLeft">
+        <TodoItem v-for="todo in filteredTodos" :key="todo.id" :todo="todo" />
       </TransitionGroup>
     </div>
     <div v-else class="no-task">No Task!</div>
@@ -95,8 +81,8 @@ export default {
       return this.$store.state.todos;
     },
 
-    filterdTodos() {
-      return this.$store.getters.filterdTodos;
+    filteredTodos() {
+      return this.$store.getters.filteredTodos;
     },
 
     anyTodos() {
@@ -147,10 +133,8 @@ export default {
 
     this.idForTodo = +localStorage.getItem("idForTodo") || 0;
 
-    this.$store.commit(
-      "mountTodos",
-      JSON.parse(localStorage.getItem("todos")) || []
-    );
+    const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+    this.$store.commit("mountTodos", savedTodos);
   },
 };
 </script>

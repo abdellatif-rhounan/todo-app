@@ -3,7 +3,7 @@
     <button
       v-for="item in filters"
       v-text="item.text"
-      :class="{ active: myFilter == item.filter }"
+      :class="{ active: filterActual == item.filter }"
       @click="changeFilter(item.filter)"
     ></button>
   </div>
@@ -24,8 +24,8 @@ export default {
   },
 
   computed: {
-    myFilter() {
-      return this.$store.state.myFilter;
+    filterActual() {
+      return this.$store.state.filterActual;
     },
   },
 

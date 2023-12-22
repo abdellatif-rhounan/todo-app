@@ -6,7 +6,7 @@
         class="checkbox"
         :id="`checkbox-${todo.id}`"
         v-model="completed"
-        @change="editCheck"
+        @change="editTodoStatus"
       />
       <label class="checkspan" :for="`checkbox-${todo.id}`"></label>
     </div>
@@ -17,10 +17,10 @@
       :class="{ editing: editing }"
       :readonly="!editing"
       v-model="text"
-      @blur="editText"
+      @blur="editTodoText"
       @keyup.enter="
-        (e) => {
-          e.target.blur();
+        (event) => {
+          event.target.blur();
         }
       "
       @keyup.esc="cancelEdit"
@@ -78,7 +78,7 @@ export default {
       event.srcElement.parentElement.previousSibling.focus();
     },
 
-    editText() {
+    editTodoText() {
       this.editing = false;
 
       if (this.text.trim() == this.preEdit || this.text.trim().length == 0) {
@@ -86,7 +86,7 @@ export default {
       } else {
         for (const [index, el] of this.$store.state.todos.entries()) {
           if (el.id == this.todo.id) {
-            this.$store.commit('editText', {
+            this.$store.commit('editTodoText', {
               index,
               text: this.text,
             });
@@ -96,10 +96,10 @@ export default {
       }
     },
 
-    editCheck() {
+    editTodoStatus() {
       for (const [index, el] of this.$store.state.todos.entries()) {
         if (el.id == this.todo.id) {
-          this.$store.commit('editCheck', {
+          this.$store.commit('editTodoStatus', {
             index,
             completed: this.completed,
           });
