@@ -1,30 +1,37 @@
 import { createStore } from "vuex";
+import axios from "axios";
+
+axios.defaults.baseURL = "http://127.0.0.1:8000/api";
 
 export const store = createStore({
   state() {
     return {
-      filterActual: "all",
+      myFilter: "all",
       todos: [],
     };
   },
 
   getters: {
-    remainingTodos(state) {
+    // Remaining Todos
+    remaining(state) {
       return state.todos.filter((el) => !el.completed).length;
     },
 
+    // All Todos Are Completed
     allDone(state, getters) {
-      return getters.remainingTodos == 0;
+      return getters.remaining == 0;
     },
 
-    showClearCompleted(state) {
+    // Display The Clear Completed Button
+    showClear(state) {
       return state.todos.filter((el) => el.completed).length > 0;
     },
 
+    // Todos After Filter
     filteredTodos(state) {
       let result;
 
-      switch (state.filterActual) {
+      switch (state.myFilter) {
         case "all":
           result = state.todos;
           break;
@@ -42,44 +49,130 @@ export const store = createStore({
       return result;
     },
 
+    // Todos Existence That Match The Filter
     anyTodos(state, getters) {
       return getters.filteredTodos.length > 0;
     },
   },
 
   mutations: {
+    // Initialize Todos State
+    getTodos(state, data) {
+      state.todos = data;
+    },
+
+    // Add New Todo Locally
     addTodo(state, todo) {
       state.todos.push(todo);
     },
 
-    mountTodos(state, savedTodos) {
-      state.todos = savedTodos;
-    },
+    // Remove Todo Locally
+    removeTodo(state, id) {
+      const index = state.todos.findIndex((el) => el.id === id);
 
-    clearCompletedTodos(state, remainingTodos) {
-      state.todos = remainingTodos;
-    },
-
-    changeFilter(state, newFilter) {
-      state.filterActual = newFilter;
-    },
-
-    removeTodo(state, index) {
       state.todos.splice(index, 1);
     },
 
-    editTodoText(state, todo) {
-      state.todos[todo.index].text = todo.text;
+    // Update Todo Locally
+    updateTodo(state, todo) {
+      const index = state.todos.findIndex((el) => el.id === todo.id);
+
+      state.todos.splice(index, 1, todo);
     },
 
-    editTodoStatus(state, todo) {
-      state.todos[todo.index].completed = todo.completed;
+    // Delete Completed Todos Locally
+    clearCompleted(state) {
+      state.todos = state.todos.filter((el) => !el.completed);
     },
 
-    checkAllTodos(state, checkedAll) {
+    // Change Filter
+    changeFilter(state, newFilter) {
+      state.myFilter = newFilter;
+    },
+
+    // Check|Uncheck All Todos
+    checkAll(state, checked) {
       state.todos.forEach((el) => {
-        el.completed = checkedAll;
+        el.completed = checked;
       });
+    },
+  },
+
+  actions: {
+    // get All Todos from DB
+    getTodos({commit}) {
+      axios.get("/todos")
+        .then(res => {
+          commit("getTodos", res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    // Add New Todo To DB
+    addTodo({commit}, todo) {
+      axios.post("/todos", todo)
+        .then(res => {
+          commit("addTodo", res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    // Remove Todo From DB
+    removeTodo({commit}, id) {
+      axios.delete(`/todos/${id}`)
+        .then(() => {
+          commit("removeTodo", id);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    // Update Todo To DB
+    updateTodo({commit}, todo) {
+      axios.put(`/todos/${todo.id}`, todo)
+        .then(() => {
+          commit('updateTodo', todo);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    // Delete Completed Todos From DB
+    clearCompleted({state, commit}) {
+      const ids = state.todos
+                    .filter(el => el.completed)
+                    .map(el => el.id);
+
+      axios.delete("/todos", {
+        data: {
+          ids,
+        },
+      })
+        .then(() => {
+          commit("clearCompleted");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    // Check|Uncheck All Todos
+    checkAll({commit}, checked) {
+      axios.patch("/todos", {
+        checked,
+      })
+        .then(() => {
+          commit("checkAll", checked);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
   },
 });

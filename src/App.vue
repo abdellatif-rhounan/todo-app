@@ -6,6 +6,7 @@
     </h2>
   </section>
 
+  <!-- Add New Todo -->
   <section class="newtodo">
     <form class="todo-form" @submit.prevent="addTodo">
       <input type="text" class="todo-input" placeholder="Add Something" v-model="newTodo" />
@@ -15,10 +16,12 @@
       </button>
     </form>
   </section>
+  <!-- End Add New Todo -->
 
   <section class="todo-list">
     <h2 class="heading">Todo List</h2>
 
+    <!-- Control Area -->
     <div class="todos-control">
       <div class="c-row">
         <CheckAll />
@@ -34,14 +37,20 @@
         </transition>
       </div>
     </div>
+    <!-- End Control Area -->
 
+    <!-- Listing Todos -->
     <div v-if="anyTodos" class="content">
       <TransitionGroup name="list" enter-active-class="animate__animated animate__fadeInLeft"
         leave-active-class="animate__animated animate__fadeOutLeft">
+        <!-- Loop Todos -->
         <TodoItem v-for="todo in filteredTodos" :key="todo.id" :todo="todo" />
+        <!-- End Loop Todos -->
       </TransitionGroup>
     </div>
     <div v-else class="no-task">No Task!</div>
+    <!-- End Listing Todos -->
+
   </section>
 
   <footer class="footer">
@@ -64,7 +73,6 @@ export default {
     return {
       myName: "",
       newTodo: "",
-      idForTodo: 0,
     };
   },
 
@@ -100,14 +108,11 @@ export default {
         return;
       }
 
-      this.$store.commit("addTodo", {
-        id: this.idForTodo,
+      this.$store.dispatch("addTodo", {
         text: this.newTodo.trim(),
-        completed: false,
       });
 
       this.newTodo = "";
-      this.idForTodo++;
     },
   },
 
@@ -115,26 +120,14 @@ export default {
     myName(newVal) {
       localStorage.setItem("myName", newVal);
     },
+  },
 
-    idForTodo(newVal) {
-      localStorage.setItem("idForTodo", newVal);
-    },
-
-    todos: {
-      handler(newVal) {
-        localStorage.setItem("todos", JSON.stringify(newVal));
-      },
-      deep: true,
-    },
+  created() {
+    this.$store.dispatch("getTodos");
   },
 
   mounted() {
     this.myName = localStorage.getItem("myName") || "";
-
-    this.idForTodo = +localStorage.getItem("idForTodo") || 0;
-
-    const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
-    this.$store.commit("mountTodos", savedTodos);
   },
 };
 </script>

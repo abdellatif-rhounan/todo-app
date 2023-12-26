@@ -1,6 +1,6 @@
 <template>
   <div class="checkall">
-    <input type="checkbox" class="checkbox" id="checkAll" :checked="allDone" @change="checkAllTodos" />
+    <input type="checkbox" class="checkbox" id="checkAll" :checked="allDone" @change="checkAll" />
     <label class="label" for="checkAll">Check All</label>
   </div>
 </template>
@@ -16,8 +16,8 @@ export default {
   },
 
   methods: {
-    checkAllTodos(event) {
-      this.$store.commit("checkAllTodos", event.target.checked);
+    checkAll(event) {
+      this.$store.dispatch("checkAll", event.target.checked);
     },
   },
 };

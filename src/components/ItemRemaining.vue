@@ -1,6 +1,6 @@
 <template>
   <div class="remaining">
-    {{ remainingTodos }} item{{ remainingTodos > 1 ? 's' : '' }} left
+    {{ remaining }} item{{ remaining > 1 ? 's' : '' }} left
   </div>
 </template>
 
@@ -9,8 +9,8 @@ export default {
   name: "ItemRemaining",
 
   computed: {
-    remainingTodos() {
-      return this.$store.getters.remainingTodos;
+    remaining() {
+      return this.$store.getters.remaining;
     },
   },
 };

@@ -2,9 +2,10 @@
   <div class="filters">
     <button
       v-for="item in filters"
-      v-text="item.text"
-      :class="{ active: filterActual == item.filter }"
-      @click="changeFilter(item.filter)"
+      :key="item"
+      v-text="item"
+      :class="{ active: myFilter == item }"
+      @click="changeFilter(item)"
     ></button>
   </div>
 </template>
@@ -15,17 +16,13 @@ export default {
 
   data() {
     return {
-      filters: [
-        { text: "All", filter: "all" },
-        { text: "Active", filter: "active" },
-        { text: "Completed", filter: "completed" },
-      ],
+      filters: ["all", "active", "completed"],
     };
   },
 
   computed: {
-    filterActual() {
-      return this.$store.state.filterActual;
+    myFilter() {
+      return this.$store.state.myFilter;
     },
   },
 

@@ -1,31 +1,33 @@
 <template>
   <div class="todo-item" :class="{ completed: completed }">
+
+    <!-- TodoItem Checkbox Btn -->
     <div class="todo-check">
       <input
         type="checkbox"
         class="checkbox"
         :id="`checkbox-${todo.id}`"
         v-model="completed"
-        @change="editTodoStatus"
+        @change="updateTodo"
       />
       <label class="checkspan" :for="`checkbox-${todo.id}`"></label>
     </div>
+    <!-- End TodoItem Checkbox Btn -->
 
+    <!-- TodoItem Text -->
     <input
       type="text"
       class="todo-text"
       :class="{ editing: editing }"
       :readonly="!editing"
       v-model="text"
-      @blur="editTodoText"
-      @keyup.enter="
-        (event) => {
-          event.target.blur();
-        }
-      "
+      @blur="updateTodo"
+      @keyup.enter="loseFocus"
       @keyup.esc="cancelEdit"
     />
+    <!-- End TodoItem Text -->
 
+    <!-- TodoItem Acions -->
     <div class="actions">
       <i v-if="!editing" class="bx bxs-edit-alt edit-item" @click="editTodo">
       </i>
@@ -33,6 +35,8 @@
 
       <i class="bx bxs-trash-alt remove-item" @click="removeTodo"></i>
     </div>
+    <!-- End TodoItem Acions -->
+
   </div>
 </template>
 
@@ -51,6 +55,7 @@ export default {
     return {
       editing: false,
       preEdit: "",
+      // For Modifying Props
       text: this.todo.text,
       completed: this.todo.completed,
     };
@@ -64,48 +69,34 @@ export default {
 
   methods: {
     removeTodo() {
-      for (const [index, el] of this.$store.state.todos.entries()) {
-        if (el.id === this.todo.id) {
-          this.$store.commit("removeTodo", index);
-          break;
-        }
-      }
+      this.$store.dispatch("removeTodo", this.todo.id);
     },
 
     editTodo(event) {
       this.preEdit = this.text;
       this.editing = true;
-      event.srcElement.parentElement.previousSibling.focus();
+      event.target.parentElement.previousElementSibling.focus();
     },
 
-    editTodoText() {
-      this.editing = false;
-
-      if (this.text.trim() == this.preEdit || this.text.trim().length == 0) {
-        this.text = this.preEdit;
-      } else {
-        for (const [index, el] of this.$store.state.todos.entries()) {
-          if (el.id == this.todo.id) {
-            this.$store.commit('editTodoText', {
-              index,
-              text: this.text,
-            });
-            break;
-          }
-        }
-      }
+    loseFocus(event) {
+      event.target.blur();
     },
 
-    editTodoStatus() {
-      for (const [index, el] of this.$store.state.todos.entries()) {
-        if (el.id == this.todo.id) {
-          this.$store.commit('editTodoStatus', {
-            index,
-            completed: this.completed,
-          });
-          break;
+    updateTodo(event) {
+      if (event.target.type === "text") {
+        this.editing = false;
+
+        if (this.text.trim() == this.preEdit || this.text.trim().length == 0) {
+          this.text = this.preEdit;
+          return;
         }
       }
+
+      this.$store.dispatch('updateTodo', {
+        id: this.todo.id,
+        text: this.text.trim(),
+        completed: this.completed,
+      });
     },
 
     cancelEdit() {
@@ -115,8 +106,8 @@ export default {
   },
 
   watch: {
-    allDone(v) {
-      this.completed = v ? true : this.todo.completed;
+    allDone(newVal) {
+      this.completed = newVal ? true : this.todo.completed;
     },
   },
 };
