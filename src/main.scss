@@ -191,6 +191,7 @@
 .todo-item {
   position: relative;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   column-gap: 13px;
   padding: 11px 7px;
@@ -198,7 +199,16 @@
   background: $bg_color2;
   animation-duration: 0.4s;
 
-  .todo-check {
+  .todo-content {
+    flex: 1 1 0;
+  }
+
+  .checklabel {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    cursor: pointer;
+
     .checkbox {
       display: none;
     }
@@ -211,7 +221,6 @@
       height: 20px;
       border-radius: 50%;
       border: 2px solid $brand_color;
-      cursor: pointer;
       transition: box-shadow 0.2s;
 
       &::after {
@@ -231,23 +240,25 @@
           0 0 15px $brand_color;
       }
     }
-  }
 
-  .todo-text {
-    width: 15rem;
-    font-size: 15px;
-    color: $text_color;
-    cursor: default;
-
-    &.editing {
-      text-decoration: none !important;
-      border-bottom: 1px solid $text_color;
-      cursor: text;
+    .todo-text {
+      width: 100%;
     }
   }
 
-  &.completed {
-    .todo-check .checkbox:checked ~ .checkspan::after {
+  .edit-view input {
+    width: 100%;
+    padding: 5px 7px;
+    font-size: 15px;
+    color: $text_color;
+    border-radius: 4px;
+    border: 2px solid $body_color;
+    box-shadow: 0 0 5px $body_color;;
+    cursor: text;
+  }
+
+  &.completed .checklabel {
+    .checkbox:checked ~ .checkspan::after {
       width: 8px;
       height: 8px;
       opacity: 1;

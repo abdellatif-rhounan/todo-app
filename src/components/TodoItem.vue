@@ -1,31 +1,36 @@
 <template>
   <div class="todo-item" :class="{ completed: completed }">
 
-    <!-- TodoItem Checkbox Btn -->
-    <div class="todo-check">
-      <input
-        type="checkbox"
-        class="checkbox"
-        :id="`checkbox-${todo.id}`"
-        v-model="completed"
-        @change="updateTodo"
-      />
-      <label class="checkspan" :for="`checkbox-${todo.id}`"></label>
-    </div>
-    <!-- End TodoItem Checkbox Btn -->
+    <div class="todo-content">
 
-    <!-- TodoItem Text -->
-    <input
-      type="text"
-      class="todo-text"
-      :class="{ editing: editing }"
-      :readonly="!editing"
-      v-model="text"
-      @blur="updateTodo"
-      @keyup.enter="loseFocus"
-      @keyup.esc="cancelEdit"
-    />
-    <!-- End TodoItem Text -->
+      <!-- TodoItem Show Layer -->
+      <div v-if="!editing" class="show-view">
+        <!-- TodoItem Checkbox Btn -->
+        <label class="checklabel">
+          <input
+            type="checkbox"
+            class="checkbox"
+            v-model="completed"
+            @change="updateTodo"
+          />
+          <span class="checkspan"></span>
+          <div class="todo-text" v-text="text"></div>
+        </label>
+      </div>
+
+      <!-- TodoItem Input -->
+      <div v-else class="edit-view">
+        <input
+          type="text"
+          v-model="text"
+          v-focus
+          @blur="updateTodo"
+          @keyup.enter="loseFocus"
+          @keyup.esc="cancelEdit"
+        />
+      </div>
+
+    </div>
 
     <!-- TodoItem Acions -->
     <div class="actions">
@@ -35,7 +40,6 @@
 
       <i class="bx bxs-trash-alt remove-item" @click="removeTodo"></i>
     </div>
-    <!-- End TodoItem Acions -->
 
   </div>
 </template>
@@ -75,7 +79,7 @@ export default {
     editTodo(event) {
       this.preEdit = this.text;
       this.editing = true;
-      event.target.parentElement.previousElementSibling.focus();
+      // event.target.parentElement.previousElementSibling.focus();
     },
 
     loseFocus(event) {
@@ -108,6 +112,14 @@ export default {
   watch: {
     allDone(newVal) {
       this.completed = newVal ? true : this.todo.completed;
+    },
+  },
+
+  directives: {
+    focus: {
+      mounted(el) {
+        el.focus();
+      },
     },
   },
 };
